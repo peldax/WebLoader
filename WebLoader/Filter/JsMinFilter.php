@@ -20,7 +20,7 @@ class JsMinFilter
 {
     public function __invoke(string $code, \WebLoader\Compiler $compiler, string $path) : string
     {
-        $minifier = new \Webloader\Minifier\JsMinifier($path);
+        $minifier = new \WebLoader\Minifier\JsMinifier($path);
         return $minifier->minify();
     }
 }
