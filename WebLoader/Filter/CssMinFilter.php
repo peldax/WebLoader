@@ -20,7 +20,7 @@ class CssMinFilter
 {
     public function __invoke(string $code, Compiler $compiler, string $path) : string
     {
-        $minifier = new \WebLoader\Filter\CssMinifier();
+        $minifier = new \WebLoader\Minifier\CssMinifier();
         $minifier->addWithPath($code, $path);
         $minifier->setMaxImportSize(0.1);
         return $minifier->minify();
