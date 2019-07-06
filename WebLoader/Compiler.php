@@ -211,22 +211,21 @@ class Compiler
 	 */
 	public function getContent(?array $files = null): string
 	{
-		if ($files === null) {
-			$files = $this->collection->getFiles();
-		}
+        if ($files === null) {
+            $files = $this->getFileCollection()->getFiles();
+        }
 
-		// load content
-		$content = '';
-		foreach ($files as $file) {
-			$content .= PHP_EOL . $this->loadFile($file);
-		}
+        $content = '';
+        foreach ($files as $file) {
+            // apply filters
+            $temp = $this->loadFile($file);
+            foreach ($this->getFilters() as $filter) {
+                $temp = \call_user_func($filter, $temp, $this, $file);
+            }
+            $content .= $temp . PHP_EOL;
+        }
 
-		// apply filters
-		foreach ($this->filters as $filter) {
-			$content = call_user_func($filter, $content, $this);
-		}
-
-		return $content;
+        return $content;
 	}
 
 
