@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace WebLoader\Filter;
 
-use Leafo\ScssPhp\Compiler;
-
 /**
  * Scss CSS filter
  *
@@ -34,7 +32,7 @@ class ScssFilter
 	{
 		// lazy loading
 		if (empty($this->sc)) {
-			$this->sc = new Compiler();
+			$this->sc = new \ScssPhp\ScssPhp\Compiler();
 		}
 
 		return $this->sc;
