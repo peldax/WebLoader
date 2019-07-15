@@ -69,7 +69,7 @@ class Extension extends \Nette\DI\CompilerExtension
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		$config = $this->getConfig($this->getDefaultConfig());
+		$config = Helpers::merge($this->getConfig(), Nette\DI\Helpers::expand($this->getDefaultConfig(), $builder->parameters));
 
 		$builder->addDefinition($this->prefix('cssNamingConvention'))
 			->setFactory('WebLoader\DefaultOutputNamingConvention::createCssConvention');
@@ -80,7 +80,7 @@ class Extension extends \Nette\DI\CompilerExtension
 		if ($config['debugger']) {
 			$builder->addDefinition($this->prefix('tracyPanel'))
 				->setClass('WebLoader\Nette\Diagnostics\Panel')
-				->setArguments([$builder->expand('%appDir%')]);
+				->setArguments([Nette\DI\Helpers::expand('%appDir%', $builder->parameters)]);
 		}
 
 		$builder->parameters['webloader'] = $config;
@@ -100,7 +100,8 @@ class Extension extends \Nette\DI\CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix('factory'))
-			->setClass('WebLoader\Nette\LoaderFactory', [$loaderFactoryTempPaths, $this->name]);
+			->setType('WebLoader\Nette\LoaderFactory')
+			->setArguments([$loaderFactoryTempPaths, $this->name]);
 
 		if (class_exists('Symfony\Component\Console\Command\Command')) {
 			$builder->addDefinition($this->prefix('generateCommand'))
@@ -170,12 +171,12 @@ class Extension extends \Nette\DI\CompilerExtension
 
 	public function afterCompile(Nette\PhpGenerator\ClassType $class): void
 	{
-		$meta = $class->getProperty('meta');
-		if (array_key_exists('webloader\\nette\\loaderfactory', $meta->value['types'])) {
-			$meta->value['types']['webloader\\loaderfactory'] = $meta->value['types']['webloader\\nette\\loaderfactory'];
+		$types = $class->getProperty('types');
+		if (array_key_exists('webloader\\nette\\loaderfactory', $types)) {
+			$types['webloader\\loaderfactory'] = $types['webloader\\nette\\loaderfactory'];
 		}
-		if (array_key_exists('WebLoader\\Nette\\LoaderFactory', $meta->value['types'])) {
-			$meta->value['types']['WebLoader\\LoaderFactory'] = $meta->value['types']['WebLoader\\Nette\\LoaderFactory'];
+		if (array_key_exists('WebLoader\\Nette\\LoaderFactory', $types)) {
+			$types['WebLoader\\LoaderFactory'] = $types['WebLoader\\Nette\\LoaderFactory'];
 		}
 
 		$init = $class->methods['initialize'];
