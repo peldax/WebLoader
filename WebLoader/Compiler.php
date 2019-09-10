@@ -109,8 +109,12 @@ class Compiler
 	{
 		$tempPath = Path::normalize($tempPath);
 
+		if (!file_exists($tempPath)) {
+			@mkdir($tempPath);
+		}
+		
 		if (!is_dir($tempPath)) {
-			throw new \WebLoader\FileNotFoundException("Temp path '$tempPath' does not exist.");
+			throw new \WebLoader\FileNotFoundException("Temp directory '$tempPath' does not exist.");
 		}
 
 		if (!is_writable($tempPath)) {
